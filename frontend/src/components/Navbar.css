@@ -1,0 +1,98 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 48px;
+}
+
+.navbar a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+
+.navbar__links {
+  display: flex;
+  gap: 32px;
+  font-weight: 600;
+}
+
+.navbar__links a {
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.navbar__links a:hover,
+.navbar__links a.active {
+  border-bottom-color: var(--amber);
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.navbar .btn--outline {
+  border: 2px solid var(--ink);
+}
+
+.navbar .btn--outline:hover {
+  background: var(--ink);
+  color: #ffffff;
+}
+
+.navbar .btn--solid {
+  background: var(--teal);
+  color: #ffffff;
+  border: 2px solid var(--teal);
+}
+
+.navbar .btn--solid:hover {
+  background: var(--teal-dark);
+  border-color: var(--teal-dark);
+}
+
+@media (max-width: 800px) {
+  .navbar {
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  .navbar__logo {
+    height: 28px;
+  }
+
+  .navbar__links {
+    display: none;
+  }
+
+  .navbar__actions {
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+}
