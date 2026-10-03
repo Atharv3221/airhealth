@@ -1,7 +1,7 @@
 import logo from '../assests/logo.png'
 import './Navbar.css'
 
-export default function Navbar() {
+export default function Navbar({ onLogin, onSignUp }) {
     return (
         <header className="navbar">
             <a href="/" className="navbar__brand">
@@ -16,12 +16,12 @@ export default function Navbar() {
             </nav>
 
             <div className="navbar__actions">
-                <a href="/login" className="btn btn--outline">
-                  Log in
-                </a>
-                <a href="/signup" className="btn btn--solid">
-                  Sign up
-                </a>
+                <button type="button" className="btn btn--outline" onClick={onLogin}>
+                    Log in
+                </button>
+                <button type="button" className="btn btn--solid" onClick={onSignUp}>
+                    Sign up
+                </button>
             </div>
         </header>
     )

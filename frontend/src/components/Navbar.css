@@ -47,14 +47,18 @@
 .btn {
   padding: 12px 22px;
   border-radius: 999px;
+  font-family: inherit;
   font-weight: 600;
   font-size: 0.95rem;
   white-space: nowrap;
+  cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 
 .navbar .btn--outline {
   border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
 }
 
 .navbar .btn--outline:hover {

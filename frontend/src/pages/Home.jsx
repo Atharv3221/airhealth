@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
 import CityCard from '../components/CityCard'
+import AuthModal from '../components/auth/AuthModal'
 import './Home.css'
 
 const CITIES = [
@@ -12,6 +13,7 @@ const CITIES = [
 
 export default function Home() {
   const [place, setPlace] = useState('')
+  const [authMode, setAuthMode] = useState(null) // null | 'login' | 'signup'
 
   const today = new Date().toLocaleDateString('en-IN', {
     weekday: 'long',
@@ -23,7 +25,9 @@ export default function Home() {
   function handleSubmit(e) {
     e.preventDefault()
     const query = place.trim()
-    if (!query) return
+    if (!query) {
+      return
+    }
     console.log('Search:', query)
   }
 
@@ -36,8 +40,12 @@ export default function Home() {
   }
 
   return (
+    <>
     <main className="hero">
-      <Navbar />
+      <Navbar
+        onLogin={() => setAuthMode('login')}
+        onSignUp={() => setAuthMode('signup')}
+      />
 
       <section className="hero__content">
         <div className="hero__pills">
@@ -79,5 +87,15 @@ export default function Home() {
         </div>
       </section>
     </main>
+
+      {/* Outside <main> so the .hero > * rule doesn't affect the overlay */}
+      {authMode && (
+        <AuthModal
+          mode={authMode}
+          onModeChange={setAuthMode}
+          onClose={() => setAuthMode(null)}
+        />
+      )}
+    </>
   )
 }
