@@ -1,0 +1,235 @@
+.air-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.air-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.air-card__head h2 {
+  margin: 0;
+  font-size: 1.375rem;
+}
+
+.air-card__region {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.air-card__model {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef1f4;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.air-card__aqi {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--band) 12%, #ffffff);
+  border-left: 6px solid var(--band);
+}
+
+.air-card__aqi-number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 112px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--band);
+  color: var(--band-text);
+}
+
+.air-card__aqi-value {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.air-card__aqi-unit {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.air-card__aqi-label {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.air-card__time {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.air-card__aqi-skeleton {
+  height: 112px;
+  border-radius: 16px;
+}
+
+.pollutants {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.air-card > div > .pollutants {
+  margin-top: 20px;
+}
+
+.pollutant {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fafbfc;
+}
+
+.pollutant__label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.pollutant__value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pollutant__unit {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.aqi-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.aqi-badge strong {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* ===== Subscribe ===== */
+.subscribe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.subscribe p {
+  margin: 0;
+}
+
+.subscribe__hint {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.subscribe--form {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.subscribe__name {
+  flex: 1 1 220px;
+}
+
+.subscribe__threshold {
+  flex: 0 1 150px;
+}
+
+.subscribe__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.subscribe__error {
+  flex-basis: 100%;
+  color: #8a1f1f;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.subscribe__error a {
+  color: inherit;
+}
+
+.subscribe--done {
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+@media (max-width: 640px) {
+  .air-card {
+    padding: 18px 16px;
+  }
+
+  .air-card__head {
+    flex-direction: column;
+  }
+
+  .air-card__aqi {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .pollutants {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .subscribe__actions,
+  .subscribe__actions .button,
+  .subscribe > .button {
+    width: 100%;
+  }
+
+  .subscribe__actions .button {
+    flex: 1;
+  }
+}

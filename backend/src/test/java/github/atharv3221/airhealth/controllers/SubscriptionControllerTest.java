@@ -6,6 +6,7 @@ import github.atharv3221.airhealth.security.JwtAuthFilter;
 import github.atharv3221.airhealth.service.JwtService;
 import github.atharv3221.airhealth.dto.CreateSubscriptionRequest;
 import github.atharv3221.airhealth.dto.SubscriptionResponse;
+import github.atharv3221.airhealth.dto.UpdateSubscriptionRequest;
 import github.atharv3221.airhealth.service.SubscriptionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,7 +60,7 @@ class SubscriptionControllerTest {
   void subscribeAreaUsesUserIdFromToken() throws Exception {
     when(subscriptionService.createAreaSubscription(7L,
         new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150)))
-        .thenReturn(new SubscriptionResponse(10L, 3L, "Koramangala", 12.93, 77.62, 150, true));
+        .thenReturn(new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true));
 
     mockMvc.perform(post("/api/subscriptions/area")
             .header("Authorization", "Bearer " + tokenFor(7L))
@@ -95,7 +97,7 @@ class SubscriptionControllerTest {
   @Test
   void listMineReturnsSubscriptions() throws Exception {
     when(subscriptionService.listMine(7L)).thenReturn(List.of(
-        new SubscriptionResponse(10L, 3L, "Koramangala", 12.93, 77.62, 150, true)));
+        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true)));
 
     mockMvc.perform(get("/api/subscriptions").header("Authorization", "Bearer " + tokenFor(7L)))
         .andExpect(status().isOk())
@@ -125,5 +127,39 @@ class SubscriptionControllerTest {
 
     mockMvc.perform(delete("/api/subscriptions/99").header("Authorization", "Bearer " + tokenFor(7L)))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void renameReturnsUpdatedSubscription() throws Exception {
+    when(subscriptionService.rename(7L, 10L, new UpdateSubscriptionRequest("Home")))
+        .thenReturn(new SubscriptionResponse(10L, "Home", 3L, "Koramangala", 12.93, 77.62, 150, true));
+
+    mockMvc.perform(patch("/api/subscriptions/10")
+            .header("Authorization", "Bearer " + tokenFor(7L))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\":\"Home\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("Home"))
+        .andExpect(jsonPath("$.areaName").value("Koramangala"));
+  }
+
+  @Test
+  void renameReturns400ForInvalidName() throws Exception {
+    when(subscriptionService.rename(eq(7L), eq(10L), any())).thenThrow(
+        new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name is required"));
+
+    mockMvc.perform(patch("/api/subscriptions/10")
+            .header("Authorization", "Bearer " + tokenFor(7L))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\":\"\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void renameReturns401WithoutToken() throws Exception {
+    mockMvc.perform(patch("/api/subscriptions/10")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\":\"Home\"}"))
+        .andExpect(status().isUnauthorized());
   }
 }

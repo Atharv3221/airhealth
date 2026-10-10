@@ -10,9 +10,9 @@ export default function Navbar({ onLogin, onSignUp }) {
 
             <nav className="navbar__links" aria-label="Main">
                 <a href="/" className="active">Home</a>
-                <a href="/map">Live map</a>
-                <a href="/routes">Clean routes</a>
-                <a href="/health"></a>
+                <span className="navbar__soon" title="Coming soon" aria-disabled="true">
+                    Clean routes <span className="soon-tag">Soon</span>
+                </span>
             </nav>
 
             <div className="navbar__actions">

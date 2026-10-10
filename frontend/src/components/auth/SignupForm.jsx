@@ -1,14 +1,37 @@
 import { useState } from "react"
+import { api, errorMessage } from "../../api"
+import { setToken } from "../../auth"
 import GoogleButton from "./GoogleButton"
 
 export default function SignupForm({ onSwitch }) {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [submitting, setSubmitting] = useState(false)
+    const [error, setError] = useState('')
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        console.log('Sign up:', name, email)
+    async function handleSubmit(e) {
+        e.preventDefault()
+        setError('')
+        setSubmitting(true)
+        const cleanEmail = email.trim()
+        try {
+            await api.signup(name.trim(), cleanEmail, password)
+        } catch (err) {
+            setError(errorMessage(err, {
+              409: 'An account with this email already exists. Try logging in instead.',
+            }))
+            setSubmitting(false)
+            return
+        }
+        try {
+            // log straight in so the user lands in the app
+            const { token } = await api.login(cleanEmail, password)
+            setToken(token)
+        } catch {
+            setError('Your account was created, but we could not log you in. Please log in.')
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -19,10 +42,11 @@ export default function SignupForm({ onSwitch }) {
           </p>
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="signup-name">Name</label>
+            {error && <p className="auth-alert auth-alert--error" role="alert">{error}</p>}
+
+            <label className="field">
+              Name
               <input
-                id="signup-name"
                 type="text"
                 autoComplete="name"
                 placeholder="Your name"
@@ -31,12 +55,11 @@ export default function SignupForm({ onSwitch }) {
                 required
                 autoFocus
               />
-            </div>
+            </label>
 
-            <div>
-              <label htmlFor="signup-email">Email</label>
+            <label className="field">
+              Email
               <input
-                id="signup-email"
                 type="email"
                 autoComplete="email"
                 placeholder="xyz@example.com"
@@ -44,12 +67,11 @@ export default function SignupForm({ onSwitch }) {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            </div>
+            </label>
 
-            <div>
-                <label htmlFor="signup-password">Password</label>
+            <label className="field">
+                Password
                 <input
-                  id="signup-password"
                   type="password"
                   autoComplete="new-password"
                   placeholder="At least 8 characters"
@@ -58,10 +80,10 @@ export default function SignupForm({ onSwitch }) {
                   minLength={8}
                   required
                 />
-            </div>
+            </label>
 
-            <button type="submit" className="auth-submit">
-              Create account
+            <button type="submit" className="button button--primary auth-submit" disabled={submitting}>
+              {submitting ? 'Creating account…' : 'Create account'}
             </button>
           </form>
 

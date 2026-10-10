@@ -29,3 +29,117 @@ body {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* ===== App surfaces (light theme only) ===== */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --border: #e2e7ec;
+  --accent: var(--teal);
+  --accent-dark: var(--teal-dark);
+  --accent-soft: #e6f3f1;
+  --radius: 18px;
+  --shadow: 0 1px 2px rgba(16, 50, 74, 0.06), 0 8px 24px rgba(16, 50, 74, 0.06);
+  color-scheme: light;
+}
+
+body {
+  background: var(--bg);
+  line-height: 1.5;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.button--primary {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.button--ghost {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.button--ghost:hover:not(:disabled) {
+  border-color: #c7d0d9;
+  background: #f9fafb;
+}
+
+.button--danger {
+  background: var(--surface);
+  border-color: var(--border);
+  color: #b42318;
+}
+
+.button--danger:hover:not(:disabled) {
+  border-color: #f0b8b3;
+  background: #fff5f4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.field input {
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  font: inherit;
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--ink);
+  outline: none;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
+}
+
+.soon-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef1f4;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

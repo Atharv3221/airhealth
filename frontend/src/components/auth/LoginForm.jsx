@@ -1,13 +1,26 @@
 import { useState } from 'react'
+import { api, errorMessage } from '../../api'
+import { setToken } from '../../auth'
 import GoogleButton from './GoogleButton'
 
-export default function LoginForm({ onSwitch }) {
+export default function LoginForm({ onSwitch, notice }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [submitting, setSubmitting] = useState(false)
+    const [error, setError] = useState('')
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        console.log('Log in:', email)
+    async function handleSubmit(e) {
+        e.preventDefault()
+        setError('')
+        setSubmitting(true)
+        try {
+            const { token } = await api.login(email.trim(), password)
+            // App sees the token and leaves this page
+            setToken(token)
+        } catch (err) {
+            setError(errorMessage(err, { 401: 'Incorrect email or password.' }))
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -16,10 +29,12 @@ export default function LoginForm({ onSwitch }) {
           <p className="auth-sub">Log in to see your saved areas.</p>
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="login-email">Email</label>
+            {notice && !error && <p className="auth-alert auth-alert--info">{notice}</p>}
+            {error && <p className="auth-alert auth-alert--error" role="alert">{error}</p>}
+
+            <label className="field">
+                Email
                 <input
-                  id="login-email"
                   type="email"
                   autoComplete="email"
                   placeholder="xyz@example.com"
@@ -28,12 +43,11 @@ export default function LoginForm({ onSwitch }) {
                   required
                   autoFocus
                 />
-            </div>
+            </label>
 
-            <div>
-                <label htmlFor="login-password">Password</label>
+            <label className="field">
+                Password
                 <input
-                  id="login-password"
                   type="password"
                   autoComplete="current-password"
                   placeholder="Your password"
@@ -41,13 +55,13 @@ export default function LoginForm({ onSwitch }) {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-            </div>
+            </label>
 
-            <button type="submit" className="auth-submit">
-                Log in
+            <button type="submit" className="button button--primary auth-submit" disabled={submitting}>
+                {submitting ? 'Logging in…' : 'Log in'}
             </button>
           </form>
-          
+
           <div className="auth-divider">or</div>
           <GoogleButton label="Sign in with Google"/>
           <p className="auth-switch">

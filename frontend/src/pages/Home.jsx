@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
 import CityCard from '../components/CityCard'
-import AuthModal from '../components/auth/AuthModal'
+import { navigate } from '../router'
 import './Home.css'
 
 const CITIES = [
@@ -13,7 +13,6 @@ const CITIES = [
 
 export default function Home() {
   const [place, setPlace] = useState('')
-  const [authMode, setAuthMode] = useState(null) // null | 'login' | 'signup'
 
   const today = new Date().toLocaleDateString('en-IN', {
     weekday: 'long',
@@ -28,23 +27,20 @@ export default function Home() {
     if (!query) {
       return
     }
-    console.log('Search:', query)
+    // the dashboard is behind login; it runs this search once the user is in
+    navigate(`/app?q=${encodeURIComponent(query)}`)
   }
 
   function handleLocate() {
-    if (!navigator.geolocation) return
-    navigator.geolocation.getCurrentPosition(
-      (pos) => console.log('Location:', pos.coords.latitude, pos.coords.longitude),
-      () => console.log('Location permission denied')
-    )
+    navigate('/app?locate=1')
   }
 
   return (
     <>
     <main className="hero">
       <Navbar
-        onLogin={() => setAuthMode('login')}
-        onSignUp={() => setAuthMode('signup')}
+        onLogin={() => navigate('/login')}
+        onSignUp={() => navigate('/signup')}
       />
 
       <section className="hero__content">
@@ -87,15 +83,6 @@ export default function Home() {
         </div>
       </section>
     </main>
-
-      {/* Outside <main> so the .hero > * rule doesn't affect the overlay */}
-      {authMode && (
-        <AuthModal
-          mode={authMode}
-          onModeChange={setAuthMode}
-          onClose={() => setAuthMode(null)}
-        />
-      )}
     </>
   )
 }

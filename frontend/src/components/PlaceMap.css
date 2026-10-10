@@ -1,0 +1,26 @@
+.place-map {
+  height: 100%;
+  min-height: 280px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: crosshair;
+  /* keep Leaflet's panes under the sticky header and the bell dropdown */
+  isolation: isolate;
+  z-index: 0;
+}
+
+.place-map.leaflet-container {
+  font: inherit;
+  background: #eef1f4;
+}
+
+.place-map .leaflet-control-attribution {
+  font-size: 0.6875rem;
+}
+
+/* soften OSM's saturated palette to match the light UI */
+.place-map .leaflet-tile-pane {
+  filter: saturate(0.55) brightness(1.03);
+}

@@ -2,6 +2,7 @@ package github.atharv3221.airhealth.controllers;
 
 import github.atharv3221.airhealth.dto.CreateSubscriptionRequest;
 import github.atharv3221.airhealth.dto.SubscriptionResponse;
+import github.atharv3221.airhealth.dto.UpdateSubscriptionRequest;
 import github.atharv3221.airhealth.service.SubscriptionService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,12 @@ public class SubscriptionController {
   @GetMapping
   public List<SubscriptionResponse> listMine(Authentication auth) {
     return subscriptionService.listMine(userId(auth));
+  }
+
+  @PatchMapping("/{id}")
+  public SubscriptionResponse rename(Authentication auth, @PathVariable Long id,
+          @RequestBody UpdateSubscriptionRequest request) {
+    return subscriptionService.rename(userId(auth), id, request);
   }
 
   @DeleteMapping("/{id}")

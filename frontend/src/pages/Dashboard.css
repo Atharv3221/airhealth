@@ -1,0 +1,179 @@
+/* phones and tablets: search, then map, then the air card */
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'search'
+    'map'
+    'card';
+  gap: 20px;
+}
+
+.dashboard__search {
+  grid-area: search;
+}
+
+.dashboard__search .page-sub {
+  margin-bottom: 8px;
+}
+
+.dashboard__map {
+  grid-area: map;
+  position: relative;
+  height: clamp(280px, 45vh, 420px);
+}
+
+.dashboard__card {
+  grid-area: card;
+  min-width: 0;
+}
+
+.dashboard__map-hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 2px 10px rgba(16, 50, 74, 0.15);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* laptops and up: search + air card on the left, a tall map that stays in view on the right */
+@media (min-width: 1024px) {
+  .shell__main:has(.dashboard) {
+    max-width: 1440px;
+  }
+
+  .dashboard__grid {
+    grid-template-columns: minmax(380px, 460px) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'search map'
+      'card   map';
+    gap: 20px 24px;
+  }
+
+  .dashboard__map {
+    position: sticky;
+    /* below the sticky app header */
+    top: 84px;
+    align-self: start;
+    height: calc(100vh - 84px - 24px);
+    height: calc(100dvh - 84px - 24px);
+    margin-top: 6px;
+    min-height: 420px;
+    max-height: 860px;
+  }
+
+  .dashboard__card {
+    align-self: start;
+  }
+}
+
+.dashboard__search {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.place-search {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.place-search:focus-within {
+  border-color: var(--accent);
+}
+
+.place-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.dashboard__locate {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dashboard__locate:disabled {
+  color: var(--muted);
+  text-decoration: none;
+  cursor: progress;
+}
+
+.dashboard__note {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.results {
+  margin-top: 4px;
+}
+
+.results__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.result:hover {
+  border-color: #c7d0d9;
+}
+
+.result.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.result span {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+

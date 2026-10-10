@@ -76,7 +76,8 @@ public class NotificationService {
         if (aqi != null && aqi >= subscription.getAqiThreshold()) {
           Notification notification = new Notification();
           notification.setSubscription(subscription);
-          notification.setMessage("AQI in " + area.getName() + " is " + aqi
+          String place = subscription.getName() != null ? subscription.getName() : area.getName();
+          notification.setMessage("AQI in " + place + " is " + aqi
               + ", at or above your limit of " + subscription.getAqiThreshold() + ".");
           notificationRepository.save(notification);
         }

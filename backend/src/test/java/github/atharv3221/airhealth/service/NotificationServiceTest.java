@@ -239,4 +239,21 @@ class NotificationServiceTest {
         .isInstanceOfSatisfying(ResponseStatusException.class,
             e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
   }
+
+  @Test
+  void alertMessageUsesSubscriptionNameWhenSet() {
+    Subscription sub = subscription(10L, area("Koramangala", 12.93, 77.62), 150);
+    sub.setName("Home");
+    when(subscriptionRepository.findByUserIdAndActiveTrue(7L)).thenReturn(List.of(sub));
+    when(notificationRepository.existsBySubscriptionIdAndCreatedAtAfter(eq(10L), any()))
+        .thenReturn(false);
+    when(airService.getCurrent(12.93, 77.62)).thenReturn(air(160));
+
+    notificationService.listMine(7L);
+
+    ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+    verify(notificationRepository).save(captor.capture());
+    assertThat(captor.getValue().getMessage())
+        .isEqualTo("AQI in Home is 160, at or above your limit of 150.");
+  }
 }

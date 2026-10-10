@@ -1,5 +1,6 @@
 package github.atharv3221.airhealth.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,10 @@ public class Subscription {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "route_id")
   private Route route;
+
+  // the user's own label for this subscription; null means "use the area's name"
+  @Column(length = 120)
+  private String name;
 
   private int aqiThreshold = 100;
 
@@ -61,6 +66,14 @@ public class Subscription {
 
   public void setRoute(Route route) {
     this.route = route;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public int getAqiThreshold() {
