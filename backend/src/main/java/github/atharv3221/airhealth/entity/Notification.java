@@ -4,8 +4,6 @@ import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,18 +28,18 @@ public class Notification {
   @Column(columnDefinition = "TEXT")
   private String message;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private NotificationStatus status = NotificationStatus.PENDING;
+  @Column(name = "is_read", nullable = false)
+  private boolean read = false;
 
   @CreationTimestamp
   @Column(nullable = false, updatable = false)
   private Instant createdAt;
 
-  @Column(length = 500)
-  private String failureReason;
-
   public Notification() {}
+
+  public Long getId() {
+    return id;
+  }
 
   public Subscription getSubscription() {
     return subscription;
@@ -49,10 +47,6 @@ public class Notification {
 
   public void setSubscription(Subscription subscription) {
     this.subscription = subscription;
-  }
-
-  public Long getId() {
-    return id;
   }
 
   public String getMessage() {
@@ -63,23 +57,15 @@ public class Notification {
     this.message = message;
   }
 
-  public NotificationStatus getStatus() {
-    return status;
+  public boolean isRead() {
+    return read;
   }
 
-  public void setStatus(NotificationStatus status) {
-    this.status = status;
+  public void setRead(boolean read) {
+    this.read = read;
   }
 
   public Instant getCreatedAt() {
     return createdAt;
-  }
-
-  public String getFailureReason() {
-    return failureReason;
-  }
-
-  public void setFailureReason(String failureReason) {
-    this.failureReason = failureReason;
   }
 }

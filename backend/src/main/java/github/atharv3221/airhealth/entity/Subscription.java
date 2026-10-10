@@ -1,9 +1,6 @@
 package github.atharv3221.airhealth.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,10 +20,6 @@ public class Subscription {
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
-
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private SubscriptionType type;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "area_id")
@@ -52,14 +45,6 @@ public class Subscription {
 
   public void setUser(User user) {
     this.user = user;
-  }
-
-  public SubscriptionType getType() {
-    return type;
-  }
-
-  public void setType(SubscriptionType type) {
-    this.type = type;
   }
 
   public Area getArea() {
