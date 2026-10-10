@@ -25,6 +25,11 @@ public class SecurityConfig {
   private static final String[] PUBLIC_POST_PATHS = {
       "/user"          // signup
   };
+  // React app shell and its client-side routes (frontend/src/App.jsx); data still needs a JWT
+  private static final String[] PUBLIC_GET_PATHS = {
+      "/", "/index.html", "/assets/**", "/favicon.png",
+      "/about", "/login", "/signup", "/app", "/app/subscriptions"
+  };
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter)
@@ -35,6 +40,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(PUBLIC_PATHS).permitAll()
             .requestMatchers(HttpMethod.POST, PUBLIC_POST_PATHS).permitAll()
+            .requestMatchers(HttpMethod.GET, PUBLIC_GET_PATHS).permitAll()
             .anyRequest().authenticated())
         .exceptionHandling(e -> e.authenticationEntryPoint(
             new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
