@@ -4,12 +4,14 @@ import { api } from '../api'
 import { clearToken } from '../auth'
 import { navigate, useLocation } from '../router'
 import NotificationBell from './NotificationBell'
+import SiteFooter from './SiteFooter'
 import { Link } from './nav'
 import './AppShell.css'
 
 const NAV = [
   { to: '/app', label: 'Dashboard' },
   { to: '/app/subscriptions', label: 'My subscriptions' },
+  { to: '/about', label: 'About' },
 ]
 
 export default function AppShell({ children }) {
@@ -64,9 +66,7 @@ export default function AppShell({ children }) {
 
       <main className="shell__main">{children}</main>
 
-      <footer className="shell__footer">
-        <p>Air quality values are modeled estimates. Data: Open-Meteo / CAMS · Places &amp; map: Open-Meteo Geocoding, © OpenStreetMap contributors</p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import logo from '../assests/logo.png'
+import { Link } from './nav'
 import './Navbar.css'
 
 export default function Navbar({ onLogin, onSignUp }) {
@@ -9,7 +10,8 @@ export default function Navbar({ onLogin, onSignUp }) {
             </a>
 
             <nav className="navbar__links" aria-label="Main">
-                <a href="/" className="active">Home</a>
+                <Link to="/" className="active">Home</Link>
+                <Link to="/about">About</Link>
                 <span className="navbar__soon" title="Coming soon" aria-disabled="true">
                     Clean routes <span className="soon-tag">Soon</span>
                 </span>

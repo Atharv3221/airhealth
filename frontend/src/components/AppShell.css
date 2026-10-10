@@ -89,19 +89,6 @@
   padding: 32px 24px 48px;
 }
 
-.shell__footer {
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.shell__footer p {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 16px 24px;
-  font-size: 0.8125rem;
-  color: var(--muted);
-}
-
 .page-title {
   margin: 0 0 6px;
   font-family: 'Fraunces Variable', 'Fraunces', serif;
@@ -126,6 +113,20 @@
     margin-right: auto;
   }
 
+  /* keep logo and actions on one row on phones */
+  .shell__brand img {
+    height: 28px;
+  }
+
+  .shell__actions {
+    gap: 8px;
+  }
+
+  .shell__actions .button {
+    min-height: 38px;
+    padding: 0 12px;
+  }
+
   /* nav drops to its own scrollable row under the logo */
   .shell__nav {
     order: 3;
@@ -141,9 +142,5 @@
 
   .shell__main {
     padding: 20px 16px 40px;
-  }
-
-  .shell__footer p {
-    padding: 16px;
   }
 }

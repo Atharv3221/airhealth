@@ -1,7 +1,9 @@
 import './App.css'
 import { useToken } from './auth'
 import AppShell from './components/AppShell'
+import PublicShell from './components/PublicShell'
 import { Redirect } from './components/nav'
+import About from './pages/About'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
@@ -19,6 +21,16 @@ export default function App() {
 
   if (pathname === '/') {
     return token ? <Redirect to="/app" /> : <Home />
+  }
+
+  // public, but shown inside the app chrome when logged in
+  if (pathname === '/about') {
+    const Shell = token ? AppShell : PublicShell
+    return (
+      <Shell>
+        <About />
+      </Shell>
+    )
   }
 
   if (pathname === '/login' || pathname === '/signup') {

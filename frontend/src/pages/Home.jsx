@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
+import SiteFooter from '../components/SiteFooter'
 import CityCard from '../components/CityCard'
 import { navigate } from '../router'
 import './Home.css'
@@ -83,6 +84,7 @@ export default function Home() {
         </div>
       </section>
     </main>
+    <SiteFooter />
     </>
   )
 }

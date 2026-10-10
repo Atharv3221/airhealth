@@ -24,10 +24,24 @@ export function navigate(to, { replace = false } = {}) {
     return
   }
   window.history[replace ? 'replaceState' : 'pushState'](null, '', to)
-  if (!replace) {
+  const hash = new URL(to, window.location.origin).hash
+  if (!replace && !hash) {
     window.scrollTo(0, 0)
   }
   emit()
+  if (hash) {
+    // wait for the new page to render, then jump to the section
+    requestAnimationFrame(() => scrollToHash(hash))
+  }
+}
+
+export function scrollToHash(hash) {
+  const el = hash && document.getElementById(decodeURIComponent(hash.slice(1)))
+  if (el) {
+    el.scrollIntoView({ block: 'start' })
+  } else {
+    window.scrollTo(0, 0)
+  }
 }
 
 /**
