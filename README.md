@@ -5,7 +5,7 @@ and subscribe to areas so you get notified when the air gets bad.
 
 ## Live Demo
 
-https://airhealth-production.up.railway.app
+https://d2m0b3oibu3wv6.cloudfront.net/
 
 ## Screenshots
 
