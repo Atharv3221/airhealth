@@ -8,14 +8,37 @@ https://d2m0b3oibu3wv6.cloudfront.net (AWS: S3 + CloudFront + Elastic Beanstalk 
 
 ## Screenshots
 
-![Airhealth screenshot](docs/screenshot.png)
-![Airhealth sign up](docs/screenshot-signup.png)
-![Airhealth screenshot2](docs/screenshot2.png)
-![Airhealth screenshot3](docs/screenshot3.png)
-![Airhealth AQI guide](docs/screenshot-aqi-guide.png)
-![Airhealth my subscriptions](docs/screenshot-subscriptions.png)
+> Captured from the live demo https://d2m0b3oibu3wv6.cloudfront.net (October 2026).
+
+### Landing page
+
 ![Airhealth landing page](docs/screenshot-landing.png)
+
+### About / AQI guide
+
+![Airhealth AQI guide](docs/screenshot-aqi-guide.png)
+
+### Sign up
+
+![Airhealth sign up](docs/screenshot-signup.png)
+
+### Log in
+
+![Airhealth log in](docs/screenshot-login.png)
+
+### Dashboard - search and map
+
 ![Airhealth dashboard](docs/screenshot-dashboard.png)
+![Airhealth dashboard with AQI details](docs/screenshot2.png)
+
+### My subscriptions and notifications
+
+![Airhealth my subscriptions](docs/screenshot-subscriptions.png)
+![Airhealth subscriptions with alert](docs/screenshot3.png)
+
+### Landing hero (previous capture)
+
+![Airhealth screenshot](docs/screenshot.png)
 
 ## Features
 
