@@ -1,6 +1,8 @@
 import { useAirQuality } from '../hooks/useAirQuality'
+import { useNearbyFires } from '../hooks/useNearbyFires'
 import { getAqiBand, POLLUTANT_UNIT, POLLUTANTS } from '../utils/aqi'
 import { formatLocalTime, parseUtc } from '../utils/time'
+import { Link } from './nav'
 import { EmptyState, ErrorState, Skeleton } from './States'
 import SubscribeForm from './SubscribeForm'
 import './AirCard.css'
@@ -38,6 +40,7 @@ export default function AirCard({ place }) {
         <EmptyState title="No air quality data for this location right now." />
       )}
       {air.status === 'ready' && air.current && <AirReading current={air.current} />}
+      <FireRow lat={place.latitude} lon={place.longitude} />
 
       <SubscribeForm place={place} />
     </section>
@@ -75,6 +78,45 @@ function AirReading({ current }) {
         ))}
       </ul>
     </>
+  )
+}
+
+function formatIst(date) {
+  return date.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+// satellite fire detections, worded as "heat spots" since many are routine burning, not wildfires;
+// hidden while loading or on error, so a lookup problem never breaks the card
+function FireRow({ lat, lon }) {
+  const fire = useNearbyFires(lat, lon)
+  if (!fire) return null
+  const latest = fire.latest ? new Date(fire.latest) : null
+
+  const nearest = fire.nearestKm < 1 ? 'under 1 km' : `${Math.round(fire.nearestKm)} km`
+
+  return (
+    <div className={`fire-row${fire.count > 0 ? ' fire-row--active' : ''}`}>
+      <span className="fire-row__title">Nearby heat spots</span>
+      <p className="fire-row__result">
+        {fire.count === 0
+          ? `No heat spots seen by satellite within ${fire.radiusKm} km in the last ${fire.days} days`
+          : `${fire.count} heat ${fire.count === 1 ? 'spot' : 'spots'} seen by satellite within ${fire.radiusKm} km. Nearest is ${nearest} away`}
+      </p>
+      <small className="fire-row__note">
+        {latest && (
+          <>
+            Latest: <time dateTime={latest.toISOString()}>{formatIst(latest)}</time> IST ·{' '}
+          </>
+        )}
+        Data: <Link to="/about#heat-spots">NASA</Link>
+      </small>
+    </div>
   )
 }
 

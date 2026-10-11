@@ -1,0 +1,63 @@
+.type-picker {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.type-picker__legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.type-picker__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.type-picker__option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.type-picker__option svg {
+  color: var(--type);
+}
+
+.type-picker__option:hover {
+  border-color: var(--type);
+}
+
+.type-picker__option.is-selected {
+  border-color: var(--type);
+  background: var(--type);
+  color: #ffffff;
+}
+
+.type-picker__option.is-selected svg {
+  color: #ffffff;
+}
+
+.type-picker__option:has(input:focus-visible) {
+  outline: 3px solid color-mix(in srgb, var(--type) 40%, transparent);
+  outline-offset: 2px;
+}
+
+.type-picker:disabled .type-picker__option {
+  opacity: 0.6;
+  cursor: default;
+}

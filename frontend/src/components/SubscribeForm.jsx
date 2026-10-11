@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { api, errorMessage } from '../api'
+import PlaceTypePicker from './PlaceTypePicker'
 import { Link } from './nav'
 
 /**
- * "Subscribe" button that expands into an area-name + threshold form.
+ * "Subscribe" button that expands into an area-name + place-type + threshold form.
  * Reset it for a new place by changing its parent's key.
  */
 export default function SubscribeForm({ place }) {
   const [open, setOpen] = useState(false)
   const [areaName, setAreaName] = useState(place.name)
+  const [type, setType] = useState('OTHER')
   const [threshold, setThreshold] = useState('100')
   const [state, setState] = useState({ status: 'idle' })
 
@@ -21,6 +23,7 @@ export default function SubscribeForm({ place }) {
         latitude: place.latitude,
         longitude: place.longitude,
         aqiThreshold: Number(threshold),
+        type,
       })
       setState({ status: 'done', subscription })
     } catch (error) {
@@ -36,7 +39,7 @@ export default function SubscribeForm({ place }) {
     return (
       <div className="subscribe subscribe--done" role="status">
         <p>
-          Subscribed to <strong>{s.name}</strong> ({s.latitude.toFixed(2)}, {s.longitude.toFixed(2)}).
+          Subscribed to <strong>{s.name}</strong>.
           You'll get an alert when AQI reaches <strong>{s.aqiThreshold}</strong>.
         </p>
         <Link to="/app/subscriptions" className="button button--ghost">View my subscriptions</Link>
@@ -69,6 +72,14 @@ export default function SubscribeForm({ place }) {
           required
         />
       </label>
+      <PlaceTypePicker
+        className="subscribe__type"
+        legend="This place is"
+        name="subscribe-type"
+        value={type}
+        onChange={setType}
+        disabled={submitting}
+      />
       <label className="field subscribe__threshold">
         Alert me at AQI
         <input

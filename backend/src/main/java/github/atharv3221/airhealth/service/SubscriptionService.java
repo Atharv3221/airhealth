@@ -62,6 +62,7 @@ public class SubscriptionService {
       if (request.aqiThreshold() != null) {
         found.setAqiThreshold(request.aqiThreshold());
       }
+      found.setType(request.type());
       return toResponse(found);
     }
 
@@ -72,6 +73,7 @@ public class SubscriptionService {
     if (request.aqiThreshold() != null) {
       subscription.setAqiThreshold(request.aqiThreshold());
     }
+    subscription.setType(request.type());
     return toResponse(subscriptionRepository.save(subscription));
   }
 
@@ -83,11 +85,15 @@ public class SubscriptionService {
         .toList();
   }
 
+  // changes the name and/or type; a field left null keeps its current value
   @Transactional
-  public SubscriptionResponse rename(Long userId, Long subscriptionId,
+  public SubscriptionResponse update(Long userId, Long subscriptionId,
           UpdateSubscriptionRequest request) {
-    String name = cleanName(request == null ? null : request.name());
-    if (name == null) {
+    if (request == null || (request.name() == null && request.type() == null)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nothing to update");
+    }
+    String name = cleanName(request.name());
+    if (request.name() != null && name == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name is required");
     }
     Subscription subscription = findOwned(userId, subscriptionId);
@@ -95,7 +101,10 @@ public class SubscriptionService {
     if (!subscription.isActive()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subscription not found");
     }
-    subscription.setName(name);
+    if (name != null) {
+      subscription.setName(name);
+    }
+    subscription.setType(request.type());
     return toResponse(subscription);
   }
 
@@ -132,6 +141,6 @@ public class SubscriptionService {
     Area a = s.getArea();
     String name = s.getName() != null ? s.getName() : a.getName();
     return new SubscriptionResponse(s.getId(), name, a.getId(), a.getName(),
-        a.getLatitude(), a.getLongitude(), s.getAqiThreshold(), s.isActive());
+        a.getLatitude(), a.getLongitude(), s.getAqiThreshold(), s.isActive(), s.getType());
   }
 }

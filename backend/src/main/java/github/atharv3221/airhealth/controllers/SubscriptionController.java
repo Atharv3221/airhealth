@@ -31,9 +31,9 @@ public class SubscriptionController {
   }
 
   @PatchMapping("/{id}")
-  public SubscriptionResponse rename(Authentication auth, @PathVariable Long id,
+  public SubscriptionResponse update(Authentication auth, @PathVariable Long id,
           @RequestBody UpdateSubscriptionRequest request) {
-    return subscriptionService.rename(userId(auth), id, request);
+    return subscriptionService.update(userId(auth), id, request);
   }
 
   @DeleteMapping("/{id}")

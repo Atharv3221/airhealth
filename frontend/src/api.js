@@ -93,14 +93,19 @@ export const api = {
   air: (lat, lon, opts) =>
     request(`/api/air?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`, opts),
 
+  /** Satellite fire detections near a point, summarised (count, nearest km, latest time). */
+  nearbyFires: (lat, lon, opts) =>
+    request(`/api/fires/nearby?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`, opts),
+
   subscriptions: (opts) => request('/api/subscriptions', opts),
-  subscribeArea: ({ areaName, latitude, longitude, aqiThreshold }) =>
+  subscribeArea: ({ areaName, latitude, longitude, aqiThreshold, type }) =>
     request('/api/subscriptions/area', {
       method: 'POST',
-      body: { areaName, latitude, longitude, aqiThreshold },
+      body: { areaName, latitude, longitude, aqiThreshold, type },
     }),
-  renameSubscription: (id, name) =>
-    request(`/api/subscriptions/${id}`, { method: 'PATCH', body: { name } }),
+  /** Change a subscription's name and/or type; leave one undefined to keep it. */
+  updateSubscription: (id, { name, type }) =>
+    request(`/api/subscriptions/${id}`, { method: 'PATCH', body: { name, type } }),
   unsubscribe: (id) => request(`/api/subscriptions/${id}`, { method: 'DELETE' }),
 
   notifications: () => request('/api/notifications'),

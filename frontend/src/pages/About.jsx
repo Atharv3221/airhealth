@@ -56,7 +56,7 @@ export default function About() {
           </li>
           <li>
             <strong>See the air.</strong> You get the US Air Quality Index (AQI) and the six main pollutants
-            for that spot.
+            for that spot, plus any heat spots a satellite has seen nearby.
           </li>
           <li>
             <strong>Subscribe.</strong> Pick an AQI limit for the places you care about, like home, work or
@@ -130,6 +130,18 @@ export default function About() {
             Values are updated about every hour. We keep each reading for up to 30 minutes, and nearby
             points (within about 1 km) share one reading.
           </li>
+          <li id="heat-spots">
+            <strong>What are heat spots?</strong> A NASA satellite looks for places on the ground that are
+            much hotter than their surroundings. These are often something burning, such as crop leftovers,
+            forest or grass, garbage, or a factory furnace. We can't tell which one it is.
+          </li>
+          <li>
+            Heat spots come from the VIIRS sensor on NASA's Suomi NPP satellite, through{' '}
+            <strong>NASA FIRMS</strong>. We count spots within 50 km over the last 2 days and leave out
+            low-confidence ones. The satellite passes over only about twice a day and can't see through
+            thick cloud or smoke, so "no heat spots seen" doesn't mean nothing is burning, and small or
+            short-lived burning can be missed. We keep this data for up to 30 minutes.
+          </li>
           <li>
             AirHealth is for general awareness. It is not medical advice. If you have a health condition,
             follow your doctor's guidance and official local alerts.
@@ -149,8 +161,8 @@ export default function About() {
             to look up the area name and air quality, and is not stored unless you subscribe to it.
           </li>
           <li>
-            Place searches and map lookups go through our server to Open-Meteo and OpenStreetMap. Your
-            account details are never sent to them.
+            Place searches, map lookups and heat spot lookups go through our server to Open-Meteo,
+            OpenStreetMap and NASA FIRMS. Your account details are never sent to them.
           </li>
         </ul>
       </section>
@@ -161,6 +173,10 @@ export default function About() {
           <li>
             Air quality: <a href="https://open-meteo.com/en/docs/air-quality-api" target="_blank" rel="noreferrer">Open-Meteo Air Quality API</a>
             {' '}(CC BY 4.0). Contains modified Copernicus Atmosphere Monitoring Service information.
+          </li>
+          <li>
+            Heat spots: <a href="https://firms.modaps.eosdis.nasa.gov" target="_blank" rel="noreferrer">NASA FIRMS</a>
+            {' '}(VIIRS S-NPP near-real-time active fires), courtesy of NASA's LANCE.
           </li>
           <li>
             Place search: <a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noreferrer">Open-Meteo Geocoding API</a>,

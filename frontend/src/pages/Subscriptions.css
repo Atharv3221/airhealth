@@ -9,13 +9,14 @@
 
 .sub {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 16px 24px;
   padding: 20px 24px;
   border: 1px solid var(--border);
+  border-left: 6px solid var(--type);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--type) 9%, var(--surface));
   box-shadow: var(--shadow);
 }
 
@@ -31,6 +32,30 @@
   font-size: 0.875rem;
 }
 
+.sub__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--type);
+  color: #ffffff;
+}
+
+.sub__type {
+  font-weight: 700;
+  color: var(--type);
+}
+
+.sub__message {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--type) 10%, var(--surface));
+  font-size: 0.9375rem;
+}
+
 .sub__air {
   display: flex;
   flex-direction: column;
@@ -42,6 +67,16 @@
   font-size: 0.75rem;
   font-weight: 700;
   color: #b42318;
+}
+
+.sub__heat {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.sub__heat--active {
+  color: #d9480f;
 }
 
 .sub__retry {
@@ -109,6 +144,11 @@
   outline: none;
 }
 
+.sub__type-picker {
+  order: 1; /* below the name and buttons */
+  flex-basis: 100%;
+}
+
 .sub__rename-form input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
@@ -121,10 +161,16 @@
 }
 
 @media (max-width: 640px) {
+  /* icon stays beside the name; everything else gets its own full-width row */
   .sub {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr);
     gap: 12px;
     padding: 16px;
+  }
+
+  .sub__air,
+  .sub__actions {
+    grid-column: 1 / -1;
   }
 
   .sub__air,

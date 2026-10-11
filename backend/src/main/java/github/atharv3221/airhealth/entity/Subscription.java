@@ -2,6 +2,8 @@ package github.atharv3221.airhealth.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +35,11 @@ public class Subscription {
   // the user's own label for this subscription; null means "use the area's name"
   @Column(length = 120)
   private String name;
+
+  // what kind of place this is, picked by the user; defaults to OTHER
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private SubscriptionType type = SubscriptionType.OTHER;
 
   private int aqiThreshold = 100;
 
@@ -90,5 +97,16 @@ public class Subscription {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public SubscriptionType getType() {
+    // rows saved before this column existed load as null
+    return type != null ? type : SubscriptionType.OTHER;
+  }
+
+  public void setType(SubscriptionType type) {
+    if (type != null) {
+      this.type = type;
+    }
   }
 }

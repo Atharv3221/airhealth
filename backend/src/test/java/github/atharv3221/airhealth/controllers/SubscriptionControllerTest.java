@@ -7,6 +7,7 @@ import github.atharv3221.airhealth.service.JwtService;
 import github.atharv3221.airhealth.dto.CreateSubscriptionRequest;
 import github.atharv3221.airhealth.dto.SubscriptionResponse;
 import github.atharv3221.airhealth.dto.UpdateSubscriptionRequest;
+import github.atharv3221.airhealth.entity.SubscriptionType;
 import github.atharv3221.airhealth.service.SubscriptionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -59,8 +61,8 @@ class SubscriptionControllerTest {
   @Test
   void subscribeAreaUsesUserIdFromToken() throws Exception {
     when(subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150)))
-        .thenReturn(new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true));
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150, null)))
+        .thenReturn(new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
 
     mockMvc.perform(post("/api/subscriptions/area")
             .header("Authorization", "Bearer " + tokenFor(7L))
@@ -97,7 +99,7 @@ class SubscriptionControllerTest {
   @Test
   void listMineReturnsSubscriptions() throws Exception {
     when(subscriptionService.listMine(7L)).thenReturn(List.of(
-        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true)));
+        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER)));
 
     mockMvc.perform(get("/api/subscriptions").header("Authorization", "Bearer " + tokenFor(7L)))
         .andExpect(status().isOk())
@@ -131,8 +133,8 @@ class SubscriptionControllerTest {
 
   @Test
   void renameReturnsUpdatedSubscription() throws Exception {
-    when(subscriptionService.rename(7L, 10L, new UpdateSubscriptionRequest("Home")))
-        .thenReturn(new SubscriptionResponse(10L, "Home", 3L, "Koramangala", 12.93, 77.62, 150, true));
+    when(subscriptionService.update(7L, 10L, new UpdateSubscriptionRequest("Home", null)))
+        .thenReturn(new SubscriptionResponse(10L, "Home", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
 
     mockMvc.perform(patch("/api/subscriptions/10")
             .header("Authorization", "Bearer " + tokenFor(7L))
@@ -145,7 +147,7 @@ class SubscriptionControllerTest {
 
   @Test
   void renameReturns400ForInvalidName() throws Exception {
-    when(subscriptionService.rename(eq(7L), eq(10L), any())).thenThrow(
+    when(subscriptionService.update(eq(7L), eq(10L), any())).thenThrow(
         new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name is required"));
 
     mockMvc.perform(patch("/api/subscriptions/10")
@@ -153,6 +155,46 @@ class SubscriptionControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"name\":\"\"}"))
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void updateAcceptsTypeAndReturnsIt() throws Exception {
+    when(subscriptionService.update(7L, 10L, new UpdateSubscriptionRequest(null, SubscriptionType.SCHOOL)))
+        .thenReturn(new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true,
+            SubscriptionType.SCHOOL));
+
+    mockMvc.perform(patch("/api/subscriptions/10")
+            .header("Authorization", "Bearer " + tokenFor(7L))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"type\":\"SCHOOL\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.type").value("SCHOOL"));
+  }
+
+  @Test
+  void updateReturns400ForUnknownType() throws Exception {
+    mockMvc.perform(patch("/api/subscriptions/10")
+            .header("Authorization", "Bearer " + tokenFor(7L))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"type\":\"CASTLE\"}"))
+        .andExpect(status().isBadRequest());
+    verify(subscriptionService, never()).update(anyLong(), anyLong(), any());
+  }
+
+  @Test
+  void subscribeAreaPassesType() throws Exception {
+    when(subscriptionService.createAreaSubscription(7L,
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150, SubscriptionType.HOME)))
+        .thenReturn(new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true,
+            SubscriptionType.HOME));
+
+    mockMvc.perform(post("/api/subscriptions/area")
+            .header("Authorization", "Bearer " + tokenFor(7L))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"areaName\":\"Koramangala\",\"latitude\":12.93,\"longitude\":77.62,"
+                + "\"aqiThreshold\":150,\"type\":\"HOME\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.type").value("HOME"));
   }
 
   @Test

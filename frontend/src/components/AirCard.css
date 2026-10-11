@@ -130,6 +130,47 @@
   color: var(--muted);
 }
 
+/* same tile look as .pollutant, full width */
+.fire-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fafbfc;
+}
+
+.fire-row--active {
+  border-color: #ffd8a8;
+  background: #fff4e6;
+}
+
+.fire-row__title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.fire-row__result {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.fire-row--active .fire-row__result {
+  color: #d9480f;
+}
+
+.fire-row__note {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.fire-row__note a {
+  color: inherit;
+}
+
 .aqi-badge {
   display: inline-flex;
   align-items: baseline;
@@ -173,6 +214,10 @@
 
 .subscribe__name {
   flex: 1 1 220px;
+}
+
+.subscribe__type {
+  flex-basis: 100%;
 }
 
 .subscribe__threshold {

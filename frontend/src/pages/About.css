@@ -43,9 +43,13 @@
   color: var(--accent-dark);
 }
 
-.about__section {
+.about__section,
+.about__list li[id] {
   /* keep headings clear of the sticky header when jumped to */
   scroll-margin-top: 88px;
+}
+
+.about__section {
   margin-top: 24px;
   padding: 28px;
   border: 1px solid var(--border);
@@ -165,7 +169,8 @@
 
 @media (max-width: 760px) {
   /* the header grows a second row (nav) on phones */
-  .about__section {
+  .about__section,
+  .about__list li[id] {
     scroll-margin-top: 124px;
   }
 }

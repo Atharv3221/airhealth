@@ -4,6 +4,10 @@ import AqiBadge from '../components/AqiBadge'
 import { Link } from '../components/nav'
 import { EmptyState, ErrorState, Skeleton } from '../components/States'
 import { useAirQuality } from '../hooks/useAirQuality'
+import { useNearbyFires } from '../hooks/useNearbyFires'
+import PlaceTypeIcon from '../components/PlaceTypeIcon'
+import PlaceTypePicker from '../components/PlaceTypePicker'
+import { getPlaceType, personalMessage } from '../utils/placeTypes'
 import './Subscriptions.css'
 
 export default function Subscriptions() {
@@ -58,7 +62,7 @@ export default function Subscriptions() {
             <SubscriptionRow
               key={s.id}
               subscription={s}
-              onRenamed={replaceItem}
+              onUpdated={replaceItem}
               onRemoved={() => removeItem(s.id)}
             />
           ))}
@@ -68,8 +72,9 @@ export default function Subscriptions() {
   )
 }
 
-function SubscriptionRow({ subscription: s, onRenamed, onRemoved }) {
+function SubscriptionRow({ subscription: s, onUpdated, onRemoved }) {
   const air = useAirQuality(s.latitude, s.longitude)
+  const fire = useNearbyFires(s.latitude, s.longitude)
   const [removing, setRemoving] = useState(false)
   const [error, setError] = useState('')
 
@@ -92,13 +97,18 @@ function SubscriptionRow({ subscription: s, onRenamed, onRemoved }) {
 
   const aqi = air.status === 'ready' ? air.current?.us_aqi : null
   const overLimit = typeof aqi === 'number' && aqi >= s.aqiThreshold
+  const placeType = getPlaceType(s.type)
+  const message = personalMessage(placeType.value, aqi, fire)
 
   return (
-    <li className="sub">
+    <li className="sub" style={{ '--type': placeType.color }}>
+      <span className="sub__icon" title={placeType.label}>
+        <PlaceTypeIcon type={placeType.value} size={22} />
+      </span>
       <div className="sub__info">
-        <SubscriptionName subscription={s} onRenamed={onRenamed} />
+        <SubscriptionName subscription={s} onUpdated={onUpdated} />
         <p className="sub__meta">
-          Alert at AQI {s.aqiThreshold} · {s.latitude.toFixed(2)}, {s.longitude.toFixed(2)}
+          <span className="sub__type">{placeType.label}</span> · Alert at AQI {s.aqiThreshold}
           {s.areaName && s.areaName !== s.name && !PLACEHOLDER_NAMES.has(s.areaName) && <> · near {s.areaName}</>}
         </p>
       </div>
@@ -116,6 +126,14 @@ function SubscriptionRow({ subscription: s, onRenamed, onRemoved }) {
             {overLimit && <span className="sub__over">Above your limit</span>}
           </>
         )}
+        {/* hidden while loading or on error, like the dashboard card */}
+        {fire && (
+          <span className={`sub__heat${fire.count > 0 ? ' sub__heat--active' : ''}`}>
+            {fire.count === 0
+              ? `No heat spots within ${fire.radiusKm} km`
+              : `${fire.count} heat ${fire.count === 1 ? 'spot' : 'spots'} within ${fire.radiusKm} km`}
+          </span>
+        )}
       </div>
 
       <div className="sub__actions">
@@ -124,6 +142,8 @@ function SubscriptionRow({ subscription: s, onRenamed, onRemoved }) {
         </button>
         {error && <p className="sub__error" role="alert">{error}</p>}
       </div>
+
+      {message && <p className="sub__message">{message}</p>}
     </li>
   )
 }
@@ -132,14 +152,16 @@ const MAX_NAME_LENGTH = 120
 // names the dashboard gives spots it couldn't look up; not worth showing as "near …"
 const PLACEHOLDER_NAMES = new Set(['Pinned location', 'Current location'])
 
-function SubscriptionName({ subscription: s, onRenamed }) {
+function SubscriptionName({ subscription: s, onUpdated }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
+  const [draftType, setDraftType] = useState('OTHER')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   function startEditing() {
     setDraft(s.name ?? '')
+    setDraftType(getPlaceType(s.type).value)
     setError('')
     setEditing(true)
   }
@@ -151,14 +173,19 @@ function SubscriptionName({ subscription: s, onRenamed }) {
       setError('Please enter a name.')
       return
     }
-    if (name === s.name) {
+    const nameChanged = name !== s.name
+    const typeChanged = draftType !== getPlaceType(s.type).value
+    if (!nameChanged && !typeChanged) {
       setEditing(false)
       return
     }
     setSaving(true)
     setError('')
     try {
-      onRenamed(await api.renameSubscription(s.id, name))
+      onUpdated(await api.updateSubscription(s.id, {
+        name: nameChanged ? name : undefined,
+        type: typeChanged ? draftType : undefined,
+      }))
       setEditing(false)
     } catch (err) {
       setError(errorMessage(err, {
@@ -174,8 +201,8 @@ function SubscriptionName({ subscription: s, onRenamed }) {
     return (
       <div className="sub__title">
         <h2 className="sub__name">{s.name || 'Unnamed area'}</h2>
-        <button type="button" className="sub__rename" onClick={startEditing} aria-label={`Rename ${s.name || 'subscription'}`}>
-          Rename
+        <button type="button" className="sub__rename" onClick={startEditing} aria-label={`Edit ${s.name || 'subscription'}`}>
+          Edit
         </button>
       </div>
     )
@@ -194,6 +221,14 @@ function SubscriptionName({ subscription: s, onRenamed }) {
         maxLength={MAX_NAME_LENGTH}
         disabled={saving}
         autoFocus
+      />
+      <PlaceTypePicker
+        className="sub__type-picker"
+        legend="This place is"
+        name={`sub-type-${s.id}`}
+        value={draftType}
+        onChange={setDraftType}
+        disabled={saving}
       />
       <button type="submit" className="button button--primary" disabled={saving}>
         {saving ? 'Saving…' : 'Save'}

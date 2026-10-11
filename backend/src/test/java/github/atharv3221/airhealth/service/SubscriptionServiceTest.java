@@ -3,6 +3,7 @@ package github.atharv3221.airhealth.service;
 import github.atharv3221.airhealth.dto.CreateSubscriptionRequest;
 import github.atharv3221.airhealth.dto.SubscriptionResponse;
 import github.atharv3221.airhealth.dto.UpdateSubscriptionRequest;
+import github.atharv3221.airhealth.entity.SubscriptionType;
 import github.atharv3221.airhealth.entity.Area;
 import github.atharv3221.airhealth.entity.Subscription;
 import github.atharv3221.airhealth.entity.User;
@@ -90,10 +91,10 @@ class SubscriptionServiceTest {
     saveAssignsId(10L);
 
     SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150));
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150, null));
 
     assertThat(response).isEqualTo(
-        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true));
+        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
     verify(areaRepository, never()).save(any());
 
     ArgumentCaptor<Subscription> captor = ArgumentCaptor.forClass(Subscription.class);
@@ -115,10 +116,10 @@ class SubscriptionServiceTest {
     saveAssignsId(11L);
 
     SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Koramangala", 12.9312, 77.6249, 150));
+        new CreateSubscriptionRequest("Koramangala", 12.9312, 77.6249, 150, null));
 
     assertThat(response).isEqualTo(
-        new SubscriptionResponse(11L, "Koramangala", 4L, "Koramangala", 12.93, 77.62, 150, true));
+        new SubscriptionResponse(11L, "Koramangala", 4L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
 
     ArgumentCaptor<Area> captor = ArgumentCaptor.forClass(Area.class);
     verify(areaRepository).save(captor.capture());
@@ -136,7 +137,7 @@ class SubscriptionServiceTest {
     saveAssignsId(10L);
 
     SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, null));
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, null, null));
 
     assertThat(response.aqiThreshold()).isEqualTo(100);
   }
@@ -149,7 +150,7 @@ class SubscriptionServiceTest {
         .thenReturn(Optional.of(subscription(10L, user(7L), koramangala, 100, true)));
 
     assertThatThrownBy(() -> subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150)))
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150, null)))
         .isInstanceOfSatisfying(ResponseStatusException.class,
             e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
     verify(subscriptionRepository, never()).save(any());
@@ -163,10 +164,10 @@ class SubscriptionServiceTest {
     when(subscriptionRepository.findByUserIdAndAreaId(7L, 3L)).thenReturn(Optional.of(inactive));
 
     SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150));
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150, null));
 
     assertThat(response).isEqualTo(
-        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true));
+        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
     assertThat(inactive.isActive()).isTrue();
     verify(subscriptionRepository, never()).save(any());
   }
@@ -179,7 +180,7 @@ class SubscriptionServiceTest {
         .thenReturn(Optional.of(subscription(10L, user(7L), koramangala, 120, false)));
 
     SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, null));
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, null, null));
 
     assertThat(response.aqiThreshold()).isEqualTo(120);
     assertThat(response.active()).isTrue();
@@ -193,7 +194,7 @@ class SubscriptionServiceTest {
         subscription(11L, me, area(4L, "Indiranagar", 12.97, 77.64), 100, false)));
 
     assertThat(subscriptionService.listMine(7L)).containsExactly(
-        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true));
+        new SubscriptionResponse(10L, "Koramangala", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
   }
 
   @Test
@@ -235,17 +236,17 @@ class SubscriptionServiceTest {
     saveAssignsId(10L);
 
     SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("  Home  ", 12.93, 77.62, 150));
+        new CreateSubscriptionRequest("  Home  ", 12.93, 77.62, 150, null));
 
     assertThat(response).isEqualTo(
-        new SubscriptionResponse(10L, "Home", 3L, "Koramangala", 12.93, 77.62, 150, true));
+        new SubscriptionResponse(10L, "Home", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
     assertThat(koramangala.getName()).isEqualTo("Koramangala");
   }
 
   @Test
   void createRejectsTooLongName() {
     assertThatThrownBy(() -> subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("x".repeat(121), 12.93, 77.62, 150)))
+        new CreateSubscriptionRequest("x".repeat(121), 12.93, 77.62, 150, null)))
         .isInstanceOfSatisfying(ResponseStatusException.class,
             e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     verify(subscriptionRepository, never()).save(any());
@@ -260,7 +261,7 @@ class SubscriptionServiceTest {
     when(subscriptionRepository.findByUserIdAndAreaId(7L, 3L)).thenReturn(Optional.of(inactive));
 
     SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
-        new CreateSubscriptionRequest("Office", 12.93, 77.62, null));
+        new CreateSubscriptionRequest("Office", 12.93, 77.62, null, null));
 
     assertThat(response.name()).isEqualTo("Office");
   }
@@ -271,11 +272,11 @@ class SubscriptionServiceTest {
     Subscription mine = subscription(10L, user(7L), koramangala, 150, true);
     when(subscriptionRepository.findById(10L)).thenReturn(Optional.of(mine));
 
-    SubscriptionResponse response = subscriptionService.rename(7L, 10L,
-        new UpdateSubscriptionRequest("  Parents' place "));
+    SubscriptionResponse response = subscriptionService.update(7L, 10L,
+        new UpdateSubscriptionRequest("  Parents' place ", null));
 
     assertThat(response).isEqualTo(new SubscriptionResponse(
-        10L, "Parents' place", 3L, "Koramangala", 12.93, 77.62, 150, true));
+        10L, "Parents' place", 3L, "Koramangala", 12.93, 77.62, 150, true, SubscriptionType.OTHER));
     assertThat(mine.getName()).isEqualTo("Parents' place");
     assertThat(koramangala.getName()).isEqualTo("Koramangala");
   }
@@ -283,9 +284,9 @@ class SubscriptionServiceTest {
   @Test
   void renameRejectsBlankOrTooLongName() {
     for (UpdateSubscriptionRequest bad : new UpdateSubscriptionRequest[] {
-        null, new UpdateSubscriptionRequest(null), new UpdateSubscriptionRequest("   "),
-        new UpdateSubscriptionRequest("x".repeat(121))}) {
-      assertThatThrownBy(() -> subscriptionService.rename(7L, 10L, bad))
+        null, new UpdateSubscriptionRequest(null, null), new UpdateSubscriptionRequest("   ", null),
+        new UpdateSubscriptionRequest("x".repeat(121), null)}) {
+      assertThatThrownBy(() -> subscriptionService.update(7L, 10L, bad))
           .isInstanceOfSatisfying(ResponseStatusException.class,
               e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
@@ -293,11 +294,75 @@ class SubscriptionServiceTest {
   }
 
   @Test
+  void createStoresChosenType() {
+    Area koramangala = area(3L, "Koramangala", 12.93, 77.62);
+    when(areaRepository.findByLatitudeAndLongitude(12.93, 77.62)).thenReturn(Optional.of(koramangala));
+    when(subscriptionRepository.findByUserIdAndAreaId(7L, 3L)).thenReturn(Optional.empty());
+    when(userRepository.getReferenceById(7L)).thenReturn(user(7L));
+    saveAssignsId(10L);
+
+    SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, 150, SubscriptionType.SCHOOL));
+
+    assertThat(response.type()).isEqualTo(SubscriptionType.SCHOOL);
+  }
+
+  @Test
+  void createReactivationUpdatesType() {
+    Area koramangala = area(3L, "Koramangala", 12.93, 77.62);
+    Subscription inactive = subscription(10L, user(7L), koramangala, 100, false);
+    inactive.setType(SubscriptionType.HOME);
+    when(areaRepository.findByLatitudeAndLongitude(12.93, 77.62)).thenReturn(Optional.of(koramangala));
+    when(subscriptionRepository.findByUserIdAndAreaId(7L, 3L)).thenReturn(Optional.of(inactive));
+
+    SubscriptionResponse response = subscriptionService.createAreaSubscription(7L,
+        new CreateSubscriptionRequest("Koramangala", 12.93, 77.62, null, SubscriptionType.OFFICE));
+
+    assertThat(response.type()).isEqualTo(SubscriptionType.OFFICE);
+  }
+
+  @Test
+  void updateChangesTypeAndKeepsName() {
+    Subscription mine = subscription(10L, user(7L), area(3L, "Koramangala", 12.93, 77.62), 150, true);
+    mine.setName("Home");
+    when(subscriptionRepository.findById(10L)).thenReturn(Optional.of(mine));
+
+    SubscriptionResponse response = subscriptionService.update(7L, 10L,
+        new UpdateSubscriptionRequest(null, SubscriptionType.HOME));
+
+    assertThat(response.name()).isEqualTo("Home");
+    assertThat(response.type()).isEqualTo(SubscriptionType.HOME);
+  }
+
+  @Test
+  void updateChangesNameAndTypeTogether() {
+    Subscription mine = subscription(10L, user(7L), area(3L, "Koramangala", 12.93, 77.62), 150, true);
+    when(subscriptionRepository.findById(10L)).thenReturn(Optional.of(mine));
+
+    SubscriptionResponse response = subscriptionService.update(7L, 10L,
+        new UpdateSubscriptionRequest("Kid's school", SubscriptionType.SCHOOL));
+
+    assertThat(response.name()).isEqualTo("Kid's school");
+    assertThat(response.type()).isEqualTo(SubscriptionType.SCHOOL);
+  }
+
+  @Test
+  void typeDefaultsToOtherForRowsSavedWithoutOne() {
+    Subscription old = subscription(10L, user(7L), area(3L, "Koramangala", 12.93, 77.62), 150, true);
+    ReflectionTestUtils.setField(old, "type", null);
+    when(subscriptionRepository.findByUserId(7L)).thenReturn(List.of(old));
+
+    assertThat(subscriptionService.listMine(7L))
+        .extracting(SubscriptionResponse::type)
+        .containsExactly(SubscriptionType.OTHER);
+  }
+
+  @Test
   void renameThrowsNotFoundForOtherUsersSubscription() {
     Subscription theirs = subscription(10L, user(8L), area(3L, "Koramangala", 12.93, 77.62), 150, true);
     when(subscriptionRepository.findById(10L)).thenReturn(Optional.of(theirs));
 
-    assertThatThrownBy(() -> subscriptionService.rename(7L, 10L, new UpdateSubscriptionRequest("Mine now")))
+    assertThatThrownBy(() -> subscriptionService.update(7L, 10L, new UpdateSubscriptionRequest("Mine now", null)))
         .isInstanceOfSatisfying(ResponseStatusException.class,
             e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
     assertThat(theirs.getName()).isNull();
@@ -308,7 +373,7 @@ class SubscriptionServiceTest {
     Subscription inactive = subscription(10L, user(7L), area(3L, "Koramangala", 12.93, 77.62), 150, false);
     when(subscriptionRepository.findById(10L)).thenReturn(Optional.of(inactive));
 
-    assertThatThrownBy(() -> subscriptionService.rename(7L, 10L, new UpdateSubscriptionRequest("Home")))
+    assertThatThrownBy(() -> subscriptionService.update(7L, 10L, new UpdateSubscriptionRequest("Home", null)))
         .isInstanceOfSatisfying(ResponseStatusException.class,
             e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
   }
